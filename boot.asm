@@ -16,7 +16,7 @@ section .text:
 
         push ax                     ; Saves AX to stack
         push bx                     ; Saves BX to stack
-        push msg                    ; Loads message to stack
+        push msg1                   ; Loads message to stack
         call _printformat           ; Prints the message
         pop ax                      ; Recover AX value from stack
         pop bx                      ; Recover BX value from stack
@@ -24,23 +24,31 @@ section .text:
         mov bx, buffer              ; Writes input buffer address to BX
         push ax                     ; Saves AX to stack
         push bx                     ; Saves BX to stack
-        push 4                      ; Writes buffer length
+        push 1                      ; Writes buffer length
         call _gets                  ; Calls _gets
         pop ax                      ; Recover AX value from stack
         pop bx                      ; Recover BX value from stack
 
-        push ax                     ; Saves AX to stack
-        push bx                     ; Saves BX to stack
-        push buffer                 ; Loads input buffer to stack
-        call _printformat           ; Prints the buffer
-        pop ax                      ; Recover AX value from stack
-        pop bx                      ; Recover BX value from stack
-        
+        mov ax, [buffer]
+        cmp ax, 0x4e
+        je _stop
+
         mov [disk_index], dl        ; Save boot disk to variable
         mov bx, kernel_address      ; Write to BX kernel origin
-        mov dh, 2                   ; Read two sectors
+        mov dh, 1                   ; Read one sectors
         call _read_disk             ; Read 16 bits from disk
 
+
+        cli                         ; Disables BIOS interupts
+        lgdt [GDT_descriptor]       ; Load GDT
+        mov eax, cr0                ; Write CR0 value to EAX
+        or eax, 1                   ; Change it to one by logical OR
+        mov cr0, eax                ; Swap values
+        jmp CODE_SEG:_enter_protected_mode
+
+    _stop:
+        push msg2
+        call _printformat
         jmp $                       ; Stops the processor
 
 
@@ -48,12 +56,17 @@ section .text:
 %include "functions/io.asm"
 %include "functions/disk_mng.asm"
 
-        msg: db "Hello, There!\nPlease enter your message: \0" ; Printable string
-    
-        buffer: times 4 db 0        ; Defines input buffer
+        msg1: db "Hello, There!\nDo You want to enter 32 bit mode?[Y]/[N](default=Y) \0" ; Printable string
+        msg2: db "Goodby!\0"
+
+        buffer: db 'Y'        ; Defines input buffer
 
         kernel_address: equ 0x1000  ; Kernel origin
         disk_index: db 0            ; Variable to store boot drive index
+
+        CODE_SEG: equ GDT_code - GDT_start
+        DATA_SEG: equ GDT_data - GDT_start
+
 
 ; Global Descriptor Table
 GDT_start:
@@ -89,7 +102,15 @@ GDT_start:
         dw GDT_end - GDT_start - 1      ; Size of GDT
         dd GDT_start                    ; Start of GDT
 
+    [bits 32]
+    _enter_protected_mode:
+        mov al, 'A'
+        mov ah, 0x0f
+        mov [0xb8000], ax
+        jmp $
+
+
     times 510-($-$$) db 0       ; Fills binary with 0 to keep the offset of 512
     dw 0xAA55                   ; Magic Word
+
     times 512 db 'A' ; sector 2 = 512 bytes
-    times 512 db 'B' ; sector 3 = 512 bytes
