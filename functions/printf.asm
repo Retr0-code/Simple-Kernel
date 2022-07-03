@@ -7,23 +7,23 @@ section .text:
 
         mov ah, 0xe                 ; Enables console character output (TTY)
 
-        mov bx, [bp+4]
+        mov bx, [bp+4]              ; Write buffer address to BX
 
-        _print_next_char:             ; Printing subroutine label
-            mov al, [bx]            ; Writes character from address that stores in SI to AL
+        _print_next_char:           ; Printing subroutine label
+            mov al, [bx]            ; Writes character from address that stores in BX to AL
         
         _format_check:
             cmp al, 0x0             ; Compares AL to 0 (0 is end of a string)
             je _done_printf         ; If equals exits
             cmp al, 0x5c            ; If equals '\'
-            je _format
+            je _format              ; Start format
             
             int 10h                 ; Else draws a char
             inc bx                  ; Increment BX (Switches to address of next character)
-            jmp _print_next_char      ; Repeats this until the end of string
+            jmp _print_next_char    ; Repeats this until the end of string
 
         _done_printf:
-            pop bp                  ; Pops BX value
+            pop bp                  ; Recovers BP value
             ret                     ; Returns from function
 
     ; Moves cursor to new line
@@ -39,6 +39,7 @@ section .text:
         popa                        ; Pops registers 
         ret                         ; Returns from function
 
+    ; Manages formats
     _format:
         
         inc bx                      ; Incriments BX
