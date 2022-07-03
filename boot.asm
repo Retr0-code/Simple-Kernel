@@ -48,7 +48,7 @@ section .text:
 %include "functions/io.asm"
 %include "functions/disk_mng.asm"
 
-        msg: db "Hello, There!\nPlease enter your message: ", 0x0 ; Printable string
+        msg: db "Hello, There!\nPlease enter your message: \0" ; Printable string
     
         buffer: times 4 db 0        ; Defines input buffer
 
@@ -62,26 +62,32 @@ GDT_start:
         dd 0x0
 
     GDT_code:
-        dw 0xffff
-        dw 0x0
-        db 0x0
+        dw 0xffff           ; Segment limit (size)
+        dw 0x0              ; 8 bit base
+        db 0x0              ; 4 bit base
         db 0b10011010
+        ; 1 - defines a segment 00 - defines highest privilege 1 - defines code segment
+        ; 1 - code segment 0 - disable execution from low privileged segments 1 - readable 0 - access by CPU
         db 0b11001111
+        ; 1 - size *= 4096 1 - enable 32 bit memory
         db 0x0
 
     GDT_data:
-        dw 0xffff
-        dw 0x0
-        db 0x0
+        dw 0xffff           ; Segment limit (size)
+        dw 0x0              ; 8 bit base
+        db 0x0              ; 4 bit base
         db 0b10010010
+        ; 1 - defines a segment 00 - defines highest privilege 1 - defines code segment
+        ; 0 - data segment 0 - expandable upwords segment 1 - writable
         db 0b11001111
+        ; 1 - size *= 4096 1 - enable 32 bit memory
         db 0x0
 
         GDT_end:
 
     GDT_descriptor:
-        dw GDT_end - GDT_start - 1
-        dd GDT_start
+        dw GDT_end - GDT_start - 1      ; Size of GDT
+        dd GDT_start                    ; Start of GDT
 
     times 510-($-$$) db 0       ; Fills binary with 0 to keep the offset of 512
     dw 0xAA55                   ; Magic Word
