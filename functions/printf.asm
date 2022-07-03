@@ -46,7 +46,9 @@ section .text:
         mov al, [bx]                ; Moves addresses value to AL
         
         cmp al, 0x6e                ; If character is 'n'
-        call _newline               ; Call new line
+        je _newline                 ; Call new line
+        cmp al, 0x30                ; If character is '0'
+        je _done_printf             ; Exits if was \0
         
         inc bx                      ; Incriment BX
         jmp _print_next_char        ; Jump to next char

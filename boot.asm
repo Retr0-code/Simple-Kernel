@@ -36,16 +36,54 @@ section .text:
         pop ax                      ; Recover AX value from stack
         pop bx                      ; Recover BX value from stack
         
+        mov [disk_index], dl
+        mov bx, kernel_address
+        mov dh, 2
+        call _read_disk
 
         jmp $                       ; Stops the processor
 
 
 ; Data Section
 %include "functions/io.asm"
+%include "functions/disk_mng.asm"
 
         msg: db "Hello, There!\nPlease enter your message: ", 0x0 ; Printable string
     
         buffer: times 4 db 0        ; Defines input buffer
 
-        times 510-($-$$) db 0       ; Fills binary with 0 to keep the offset of 512
-        dw 0xAA55                   ; Magic Word
+        kernel_address: equ 0x1000
+        disk_index: db 0
+
+ Global Descriptor Table
+GDT_start:
+    GDT_null:
+        dd 0x0
+        dd 0x0
+
+    GDT_code:
+        dw 0xffff
+        dw 0x0
+        db 0x0
+        db 0b10011010
+        db 0b11001111
+        db 0x0
+
+    GDT_data:
+        dw 0xffff
+        dw 0x0
+        db 0x0
+        db 0b10010010
+        db 0b11001111
+        db 0x0
+
+        GDT_end:
+
+    GDT_descriptor:
+        dw GDT_end - GDT_start - 1
+        dd GDT_start
+
+    times 510-($-$$) db 0       ; Fills binary with 0 to keep the offset of 512
+    dw 0xAA55                   ; Magic Word
+    times 512 db 'A' ; sector 2 = 512 bytes
+    times 512 db 'B' ; sector 3 = 512 bytes
