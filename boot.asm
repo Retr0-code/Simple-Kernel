@@ -36,10 +36,10 @@ section .text:
         pop ax                      ; Recover AX value from stack
         pop bx                      ; Recover BX value from stack
         
-        mov [disk_index], dl
-        mov bx, kernel_address
-        mov dh, 2
-        call _read_disk
+        mov [disk_index], dl        ; Save boot disk to variable
+        mov bx, kernel_address      ; Write to BX kernel origin
+        mov dh, 2                   ; Read two sectors
+        call _read_disk             ; Read 16 bits from disk
 
         jmp $                       ; Stops the processor
 
@@ -52,10 +52,10 @@ section .text:
     
         buffer: times 4 db 0        ; Defines input buffer
 
-        kernel_address: equ 0x1000
-        disk_index: db 0
+        kernel_address: equ 0x1000  ; Kernel origin
+        disk_index: db 0            ; Variable to store boot drive index
 
- Global Descriptor Table
+; Global Descriptor Table
 GDT_start:
     GDT_null:
         dd 0x0
