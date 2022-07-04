@@ -6,7 +6,7 @@ global _boot   ; Defines entrypoint
 ; Code section
 section .text:
     _boot:
-        xor ax, ax
+        xor ax, ax                  ; Clear Data and Extra segments
         mov ds, ax
 	    mov es, ax
 
@@ -108,8 +108,8 @@ GDT_start:
 
     [bits 32]
     _enter_protected_mode:
-        mov ax, DATA_SEG
-        mov ds, ax
+        mov ax, DATA_SEG                ; Write data segment to ax
+        mov ds, ax                      ; Distribute data segment to segments
 	    mov ss, ax
 	    mov es, ax
 	    mov fs, ax

@@ -3,7 +3,7 @@
 nasm -f bin -o build/boot.bin boot.asm
 nasm -f bin -o build/zeroes.bin bootloader/zeroes.asm
 nasm -f elf -o build/kernel_entry.o bootloader/kernel_entry.asm
-i386-elf-gcc -ffreestanding -m32 -g -c kernel/kernel.cpp -o build/kernel.o
+i386-elf-gcc -ffreestanding -m32 -g -c kernel/kernel.c -o build/kernel.o
 
 i386-elf-ld -o build/full_kernel.bin -Ttext 0x1000 build/kernel_entry.o build/kernel.o --oformat binary
 
