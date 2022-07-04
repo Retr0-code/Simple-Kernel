@@ -1,9 +1,8 @@
 [bits 32]
 
 extern main
-global _load_kernel
-
 section .text:
-    _load_kernel:
+global _start
+    _start:
         call main
         jmp $

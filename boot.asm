@@ -1,12 +1,15 @@
 [bits 16]       ; Defines architecture of bootloader
 org 0x7c00      ; Defines general offset
 
-
-global _start   ; Defines entrypoint
+global _boot   ; Defines entrypoint
 
 ; Code section
 section .text:
-    _start:
+    _boot:
+        xor ax, ax
+        mov ds, ax
+	    mov es, ax
+
         mov bp, 0x8000              ; Set origin of stack
         push bp
         mov bp, sp
@@ -16,7 +19,7 @@ section .text:
 
         push ax                     ; Saves AX to stack
         push bx                     ; Saves BX to stack
-        push msg1                   ; Loads message to stack
+        push msg                    ; Loads message to stack
         call _printformat           ; Prints the message
         pop ax                      ; Recover AX value from stack
         pop bx                      ; Recover BX value from stack
@@ -35,8 +38,11 @@ section .text:
 
         mov [disk_index], dl        ; Save boot disk to variable
         mov bx, kernel_address      ; Write to BX kernel origin
-        mov dh, 1                   ; Read one sectors
+        mov dh, 0x02                ; Read two sectors
         call _read_disk             ; Read 16 bits from disk
+
+        mov ax, 0x03                ; Clears screen
+        int 10h                     ; Use interuption
 
 
         cli                         ; Disables BIOS interupts
@@ -47,8 +53,6 @@ section .text:
         jmp CODE_SEG:_enter_protected_mode
 
     _stop:
-        push msg2
-        call _printformat
         call _shutdown
 
 
@@ -57,8 +61,7 @@ section .text:
 %include "bootloader/disk_mng.asm"
 %include "bootloader/shutdown.asm"
 
-        msg1: db "Hello, There!\nDo You want to enter 32 bit mode?[Y]/[N](default=Y) \0" ; Printable string
-        msg2: db "Goodby!\0"
+        msg: db "Hello, There!\nDo You want to enter 32 bit mode?[Y]/[N](default=Y) \0" ; Printable string
 
         buffer: db 'Y'        ; Defines input buffer
 
@@ -105,13 +108,17 @@ GDT_start:
 
     [bits 32]
     _enter_protected_mode:
-        mov al, 'A'
-        mov ah, 0x0f
-        mov [0xb8000], ax
-        jmp $
+        mov ax, DATA_SEG
+        mov ds, ax
+	    mov ss, ax
+	    mov es, ax
+	    mov fs, ax
+	    mov gs, ax
 
+        mov ebp, 0xF0000
+        mov esp, ebp
+
+        jmp kernel_address
 
     times 510-($-$$) db 0       ; Fills binary with 0 to keep the offset of 512
     dw 0xAA55                   ; Magic Word
-
-    times 512 db 'A' ; sector 2 = 512 bytes
