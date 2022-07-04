@@ -53,9 +53,9 @@ section .text:
 
 
 ; Data Section
-%include "functions/io.asm"
-%include "functions/disk_mng.asm"
-%include "functions/shutdown.asm"
+%include "bootloader/io.asm"
+%include "bootloader/disk_mng.asm"
+%include "bootloader/shutdown.asm"
 
         msg1: db "Hello, There!\nDo You want to enter 32 bit mode?[Y]/[N](default=Y) \0" ; Printable string
         msg2: db "Goodby!\0"
