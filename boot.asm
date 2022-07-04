@@ -1,4 +1,4 @@
-bits 16         ; Defines architecture of bootloader
+[bits 16]       ; Defines architecture of bootloader
 org 0x7c00      ; Defines general offset
 
 

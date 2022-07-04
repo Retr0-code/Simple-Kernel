@@ -12,11 +12,11 @@ section .text:
         mov dh, 0x00        ; Head that read
 
         int 0x13            ; BIOS interupt to read data
-        jc _disk_error       ; If carry is set raise an error
+        jc _disk_error      ; If carry is set raise an error
 
         pop dx              ; Recover DX from stack
         cmp al, dh          ; Check amount of readen sectors
-        jne _sectors_error   ; If they are not equal raise an error
+        jne _sectors_error  ; If they are not equal raise an error
         popa                ; Recover registers
         ret                 ; Exit the function
 
@@ -24,10 +24,12 @@ section .text:
     _disk_error:
         push disk_error_text
         call _printformat
+        jmp $
 
     _sectors_error:
         push sectors_error_text
         call _printformat
+        jmp $
 
     disk_error_text: db "Disk read error\0"
     sectors_error_text: db "Incorrect number of sectors read\0",

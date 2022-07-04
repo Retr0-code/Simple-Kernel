@@ -1,6 +1,5 @@
 global _gets
 
-
 section .text:
     ; Get string function
     _gets:
