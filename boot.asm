@@ -49,12 +49,13 @@ section .text:
     _stop:
         push msg2
         call _printformat
-        jmp $                       ; Stops the processor
+        call _shutdown
 
 
 ; Data Section
 %include "functions/io.asm"
 %include "functions/disk_mng.asm"
+%include "functions/shutdown.asm"
 
         msg1: db "Hello, There!\nDo You want to enter 32 bit mode?[Y]/[N](default=Y) \0" ; Printable string
         msg2: db "Goodby!\0"
