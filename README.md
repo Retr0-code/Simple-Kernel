@@ -4,9 +4,9 @@ The project was originally conceived to study low-level programming in assembler
 
 # To Do
 
- [ ] Write basic I/O drivers
- [ ] Add file system
- [ ] Write interactive shell
+ - [ ] Write basic I/O drivers
+ - [ ] Add file system
+ - [ ] Write interactive shell
 
 # Resources
 
