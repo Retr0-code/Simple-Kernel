@@ -1,4 +1,4 @@
-global _printf
+global _printformat
 
 section .text:
     _printformat:
