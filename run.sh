@@ -1,13 +1,90 @@
 #!/bin/bash
 
-nasm -f bin -o build/boot.bin boot.asm
-nasm -f bin -o build/zeroes.bin bootloader/zeroes.asm
-nasm -f elf -o build/kernel_entry.o bootloader/kernel_entry.asm
-nasm -f elf -o build/printk.o kernel/lib/std/printk.asm 
-i386-elf-gcc -ffreestanding -m32 -g -c kernel/kernel.c -o build/kernel.o
+# Parse arguments
+POSITIONAL_ARGS=()
 
-i386-elf-ld -o build/full_kernel.bin -Ttext 0x1000 build/*.o --oformat binary
+Usage()
+{
+	echo -e "Usage:\t./run.sh binutils-prefix ... i386-prefix ..."
+    echo -e "\t./run.sh bp ... ip ...\n"
+    echo -e "\tbinutils-prefix\t\tbp\tPath to cross compiled binutils"
+    echo -e "\ti386-prefix\t\tip\tPath to cross compiled GCC i386 elf"
 
-cat build/boot.bin build/full_kernel.bin build/zeroes.bin > build/OS.bin
+}
 
-qemu-system-x86_64 -drive format=raw,file="build/OS.bin",index=0,if=floppy, -m 128M
+while [[ $# -gt 0 ]]; do
+	case $1 in
+    bp | binutils-prefix)
+		BIN_PREFIX="$2"
+		shift
+		shift
+		;;
+	ip | i386-prefix)
+		GCC_PREFIX="$2"
+		shift
+		shift
+		;;
+	help)
+		Usage
+		shift
+		;;
+	*)
+		echo "Unknown option $1"
+		exit 1
+		;;
+	*)
+		POSITIONAL_ARGS+=("$1")
+		shift
+		;;
+	esac
+done
+
+# Compile OS
+
+if [[ -z "$GCC_PREFIX" ]] || [[ -z "$BIN_PREFIX" ]] ; then
+	Usage
+	exit 2
+fi
+
+/usr/bin/nasm -f bin -o build/boot.bin boot.asm
+if [ $? != 0 ] ; then
+	echo "E: Bootloader compilation failed"
+	exit 3
+fi
+
+/usr/bin/nasm -f bin -o build/zeroes.bin bootloader/zeroes.asm
+if [ $? != 0 ] ; then
+	echo "E: Zeroes offset compilation failed"
+	exit 3
+fi
+
+/usr/bin/nasm -f elf -o build/kernel_entry.o bootloader/kernel_entry.asm
+if [ $? != 0 ] ; then
+	echo "E: Kernel entry compilation failed"
+	exit 3
+fi
+/usr/bin/nasm -f elf -o build/printk.o kernel/lib/std/printk.asm
+if [ $? != 0 ] ; then
+	echo "E: Library compilation failed"
+	exit 3
+fi
+
+$GCC_PREFIX/i386-elf-gcc -ffreestanding -m32 -g -c kernel/kernel.c -o build/kernel.o
+if [ $? != 0 ] ; then
+	echo "E: Kernel compilation failed"
+	exit 4
+fi
+
+$BIN_PREFIX/i386-elf-ld -o build/full_kernel.bin -Ttext 0x1000 build/*.o --oformat binary
+if [ $? != 0 ] ; then
+	echo "E: Linking failed"
+	exit 5
+fi
+
+/bin/cat build/boot.bin build/full_kernel.bin build/zeroes.bin > build/OS.bin
+if [ $? != 0 ] ; then
+	echo "E: Kernel packing failed"
+	exit 6
+fi
+
+/usr/bin/qemu-system-x86_64 -drive format=raw,file="build/OS.bin",index=0,if=floppy, -m 128M
