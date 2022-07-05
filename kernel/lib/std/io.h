@@ -4,6 +4,10 @@
 #include "datatypes.h"
 #include "../../drivers/port_io.h"
 
-void _printk(const char*, uint8_t);
+#define VGA_RESOLUTION  80
+
+extern void printformat(const char* _string, uint8_t _color);
+
+extern bool set_cursor_position(coords _pos);
 
 #endif

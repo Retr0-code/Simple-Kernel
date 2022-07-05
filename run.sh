@@ -63,28 +63,71 @@ if [ $? != 0 ] ; then
 	echo "E: Kernel entry compilation failed"
 	exit 3
 fi
-/usr/bin/nasm -f elf -o build/printk.o kernel/lib/std/printk.asm
-if [ $? != 0 ] ; then
-	echo "E: Library compilation failed"
-	exit 3
+
+drivers_asm=`ls kernel/drivers/*.asm`
+if [ $? == 0 ] ; then
+	for driver_asm in $drivers_asm
+	do
+		/usr/bin/nasm -f elf -o build/$(basename $driver_asm.o) kernel/drivers/$(basename $driver_asm)
+		if [ $? != 0 ] ; then
+			echo "E: Driver $driver_asm compilation failed"
+			exit 3
+		fi
+	done
+fi
+
+drivers_c=`/bin/ls kernel/drivers/*.c`
+if [ $? == 0 ] ; then
+	for driver_c in $drivers_c
+	do
+		$GCC_PREFIX/i386-elf-gcc -ffreestanding -m32 -g -c kernel/drivers/$(basename $driver_c)  -o build/$(basename $driver_c.o)
+		if [ $? != 0 ] ; then
+			echo "E: Driver $driver_c compilation failed"
+			exit 3
+		fi
+	done
+fi
+
+libs_asm=`/bin/ls kernel/lib/std/*.asm`
+if [ $? == 0 ] ; then
+	for lib_asm in $libs_asm
+	do
+		/usr/bin/nasm -f elf -o build/$(basename $lib_asm.o) kernel/lib/std/$(basename $lib_asm)
+		if [ $? != 0 ] ; then
+			echo "E: Library $lib_asm compilation failed"
+			exit 4
+		fi
+	done
+fi
+
+libs_c=`/bin/ls kernel/lib/std/*.c`
+if [ $? == 0 ] ; then
+	for lib_c in $libs_c
+	do
+		$GCC_PREFIX/i386-elf-gcc -ffreestanding -m32 -g -c kernel/lib/std/$(basename $lib_c) -o build/$(basename $lib_c.o)
+		if [ $? != 0 ] ; then
+			echo "E: Library $lib_c compilation failed"
+			exit 4
+		fi
+	done
 fi
 
 $GCC_PREFIX/i386-elf-gcc -ffreestanding -m32 -g -c kernel/kernel.c -o build/kernel.o
 if [ $? != 0 ] ; then
 	echo "E: Kernel compilation failed"
-	exit 4
+	exit 5
 fi
 
 $BIN_PREFIX/i386-elf-ld -o build/full_kernel.bin -Ttext 0x1000 build/*.o --oformat binary
 if [ $? != 0 ] ; then
 	echo "E: Linking failed"
-	exit 5
+	exit 6
 fi
 
 /bin/cat build/boot.bin build/full_kernel.bin build/zeroes.bin > build/OS.bin
 if [ $? != 0 ] ; then
 	echo "E: Kernel packing failed"
-	exit 6
+	exit 7
 fi
 
 /usr/bin/qemu-system-x86_64 -drive format=raw,file="build/OS.bin",index=0,if=floppy, -m 128M

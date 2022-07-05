@@ -2,6 +2,8 @@
 
 extern void main()
 {
-    _printk("Hey! I am writing straight to video memory", 0x0f);
+    printformat("Hey! I am writing straight to video memory", 0x0f);
+    coords pos = {10, 0};
+    set_cursor_position(pos);
     return;
 }
