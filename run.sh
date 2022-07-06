@@ -130,8 +130,10 @@ if [ $? != 0 ] ; then
 	exit 7
 fi
 
-/bin/dd if=/dev/zero of=iso/flash.img bs=1024 count=1440
-/bin/dd if=build/OS.bin of=iso/flash.img seek=0 count=20 conv=notrunc
+/bin/dd if=/dev/zero of=iso/floppy.img bs=1024 count=1440
+/bin/dd if=build/OS.bin of=iso/floppy.img seek=0 count=20 conv=notrunc
 /usr/bin/genisoimage -quiet -V 'SK-OS' -input-charset iso8859-1 -o OS.iso -b floppy.img -hide floppy.img iso/
 
-/usr/bin/qemu-system-x86_64 -drive format=raw,file="build/OS.bin",index=0,if=floppy, -m 128M
+# Uncomment this to run straight raw binary kernel
+# /usr/bin/qemu-system-x86_64 -drive format=raw,file="build/OS.bin",index=0,if=floppy, -m 128M
+/usr/bin/qemu-system-i386 -cdrom OS.iso

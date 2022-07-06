@@ -118,6 +118,10 @@ GDT_start:
         mov ebp, 0xF0000
         mov esp, ebp
 
+;        mov edx, 0xb8000
+;        mov al, 0x41
+;        mov [edx], al
+;        jmp $
         jmp kernel_address
 
     times 510-($-$$) db 0       ; Fills binary with 0 to keep the offset of 512
