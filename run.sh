@@ -64,7 +64,7 @@ if [ $? != 0 ] ; then
 	exit 3
 fi
 
-drivers_asm=`ls kernel/drivers/*.asm`
+drivers_asm=`/bin/ls kernel/drivers/*.asm`
 if [ $? == 0 ] ; then
 	for driver_asm in $drivers_asm
 	do
