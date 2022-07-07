@@ -76,7 +76,7 @@ if [ $? == 0 ] ; then
 	done
 fi
 
-drivers_c=`/bin/ls kernel/drivers/*.cpp`
+drivers_c=`/bin/ls kernel/drivers/*.c`
 if [ $? == 0 ] ; then
 	for driver_c in $drivers_c
 	do
@@ -100,7 +100,7 @@ if [ $? == 0 ] ; then
 	done
 fi
 
-libs_c=`/bin/ls kernel/lib/std/*.cpp`
+libs_c=`/bin/ls kernel/lib/std/*.c`
 if [ $? == 0 ] ; then
 	for lib_c in $libs_c
 	do
@@ -112,7 +112,7 @@ if [ $? == 0 ] ; then
 	done
 fi
 
-$GCC_PREFIX/i386-elf-gcc -ffreestanding -m32 -g -c kernel/kernel.cpp -o build/kernel.o
+$GCC_PREFIX/i386-elf-gcc -ffreestanding -m32 -g -c kernel/kernel.c -o build/kernel.o
 if [ $? != 0 ] ; then
 	echo "E: Kernel compilation failed"
 	exit 5

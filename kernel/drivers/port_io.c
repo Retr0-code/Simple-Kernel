@@ -1,4 +1,4 @@
-#include "port_io.hpp"
+#include "port_io.h"
 
 // Send byte
 void pb_out(uint16_t port, uint8_t data)
