@@ -42,4 +42,14 @@ extern uint16_t print_char(
 
 extern void clear(uint16_t* _tty_buf, color_t _c);
 
+/*	Calculates string length _s
+	returns length of string
+*/
+extern uint16_t strlen(const char* _s);
+
+/*	Compares string _s1 with string _s2
+	return true if _s1 = _s2
+*/
+extern bool strcmp(const char* _s1, const char* _s2);
+
 #endif
