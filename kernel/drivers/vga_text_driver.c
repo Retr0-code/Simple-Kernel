@@ -6,7 +6,7 @@ uint16_t set_cursor_position(coords _pos)
     uint16_t offset = _pos.y * VGA_WIDTH + _pos.x;  /*
         Calculates offset in vga buffer to set cursor
     */
-    if (_pos.x >= 0 && _pos.y >= 0 && offset < 0x7d0)
+    if (_pos.x >= 0 && _pos.y >= 0 && offset < 2000)
     {
         pb_out(VGA_CTRL_REGISTER, VGA_HIGH_OFFSET);
         pb_out(VGA_DATA_REGISTER, (uint8_t)(offset));
@@ -33,3 +33,12 @@ uint16_t vga_struct(const char _char, color_t _color)
     BG      FG      Char
     */
 }
+
+// coords get_cursor_position(uint16_t _offset)
+// {
+//     coords pos = {
+//         _offset % VGA_WIDTH,
+//         _offset / VGA_WIDTH
+//     };
+//     return pos;
+// }

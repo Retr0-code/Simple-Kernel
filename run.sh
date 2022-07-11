@@ -9,7 +9,6 @@ Usage()
     echo -e "\t./run.sh bp ... ip ...\n"
     echo -e "\tbinutils-prefix\t\tbp\tPath to cross compiled binutils"
     echo -e "\ti386-prefix\t\tip\tPath to cross compiled GCC i386 elf"
-
 }
 
 while [[ $# -gt 0 ]]; do

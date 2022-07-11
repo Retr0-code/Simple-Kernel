@@ -28,4 +28,7 @@ extern uint16_t vga_struct(const char _char, color_t _color);
 */
 uint8_t color_sum(color_t _c);
 
+
+coords get_cursor_position(uint16_t _offset);
+
 #endif
