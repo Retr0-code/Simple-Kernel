@@ -6,7 +6,7 @@ extern void main()
     clear(tty_buffer, (color_t){CYAN, BLUE});
 
     uint16_t offset = 0;
-    
+
     const char* string = "Hey! I like how its done, but I don't understand why it does not work sometimes.";
     offset = print(string, (color_t){CYAN, BLUE}, offset, tty_buffer);
 

@@ -51,12 +51,6 @@ if [ $? != 0 ] ; then
 	exit 3
 fi
 
-/usr/bin/nasm -f bin -o build/zeroes.bin bootloader/zeroes.asm
-if [ $? != 0 ] ; then
-	echo "E: Zeroes offset compilation failed"
-	exit 3
-fi
-
 /usr/bin/nasm -f elf -o build/kernel_entry.o bootloader/kernel_entry.asm
 if [ $? != 0 ] ; then
 	echo "E: Kernel entry compilation failed"
@@ -123,7 +117,7 @@ if [ $? != 0 ] ; then
 	exit 6
 fi
 
-/bin/cat build/boot.bin build/full_kernel.bin build/zeroes.bin > build/OS.bin
+/bin/cat build/boot.bin build/full_kernel.bin > build/OS.bin
 if [ $? != 0 ] ; then
 	echo "E: Kernel packing failed"
 	exit 7
@@ -134,5 +128,5 @@ fi
 /usr/bin/genisoimage -quiet -V 'SK-OS' -input-charset iso8859-1 -o OS.iso -b floppy.img -hide floppy.img iso/
 
 # Uncomment this to run straight raw binary kernel
-# /usr/bin/qemu-system-x86_64 -drive format=raw,file="build/OS.bin",index=0,if=floppy, -m 128M
-/usr/bin/qemu-system-i386 -cdrom OS.iso
+/usr/bin/qemu-system-x86_64 -drive format=raw,file="build/OS.bin",index=0,if=floppy, -m 128M
+# /usr/bin/qemu-system-i386 -cdrom OS.iso

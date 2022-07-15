@@ -38,7 +38,7 @@ section .text:
 
         mov [disk_index], dl        ; Save boot disk to variable
         mov bx, kernel_address      ; Write to BX kernel origin
-        mov dh, 0x02                ; Read two sectors
+        mov dh, 0x14                ; Read 20 sectors
         call _read_disk             ; Read 16 bits from disk
 
         mov ax, 0x03                ; Clears screen

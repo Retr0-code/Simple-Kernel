@@ -34,11 +34,11 @@ uint16_t vga_struct(const char _char, color_t _color)
     */
 }
 
-// coords get_cursor_position(uint16_t _offset)
-// {
-//     coords pos = {
-//         _offset % VGA_WIDTH,
-//         _offset / VGA_WIDTH
-//     };
-//     return pos;
-// }
+coords get_cursor_position(uint16_t _offset)
+{
+    coords pos = {
+        _offset % VGA_WIDTH,
+        _offset / VGA_WIDTH
+    };
+    return pos;
+}
