@@ -128,5 +128,5 @@ fi
 /usr/bin/genisoimage -quiet -V 'SK-OS' -input-charset iso8859-1 -o OS.iso -b floppy.img -hide floppy.img iso/
 
 # Uncomment this to run straight raw binary kernel
-/usr/bin/qemu-system-x86_64 -drive format=raw,file="build/OS.bin",index=0,if=floppy, -m 128M
-# /usr/bin/qemu-system-i386 -cdrom OS.iso
+# /usr/bin/qemu-system-x86_64 -drive format=raw,file="build/OS.bin",index=0,if=floppy, -m 128M
+/usr/bin/qemu-system-i386 -cdrom OS.iso

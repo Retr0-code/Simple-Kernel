@@ -40,7 +40,8 @@ extern uint16_t print_char(
     uint16_t _offset,
     uint16_t* _buf);
 
-extern void clear(uint16_t* _tty_buf, color_t _c);
+// Fills screen with specific character
+extern void fill(uint16_t* _tty_buf, const char _f, color_t _c);
 
 /*	Calculates string length _s
 	returns length of string
