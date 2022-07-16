@@ -7,7 +7,7 @@ extern void main()
 
     uint16_t offset = 0;
 
-    offset = print("Hey! I like how its done, but I don't understand why it does not work sometimes. Finaly, I fixed it!",
+    offset = print("Hey! I like how its done, but I don't understand why it does not work sometimes.\n\tFinaly, I fixed it!",
     (color_t){LIGHT_CYAN, BLUE},
     offset,
     tty_buffer);

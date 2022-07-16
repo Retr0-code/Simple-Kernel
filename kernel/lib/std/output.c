@@ -10,8 +10,29 @@ uint16_t print(
     uint16_t index = 0;
     while (_s[index] != 0x00)   // 0 byte is string terminator
     {
-        _offset = print_char(_s[index], _c, _offset, _tty_buf);
-        index++ ;
+        switch (_s[index])
+        {
+            case '\n':
+                _offset = set_cursor_position(
+                    (coords){0, _offset / VGA_WIDTH + 1});
+                index++ ;
+                break;
+            case '\r':
+                _offset = set_cursor_position(
+                    (coords){0, _offset / VGA_WIDTH});
+                index++ ;
+                break;
+            case '\t':
+                coords current_pos = get_cursor_position(_offset);
+                current_pos.x -= current_pos.x % 4;
+                current_pos.x += 4;
+                _offset = set_cursor_position(current_pos);
+                index++ ;
+                break;
+            default:
+                _offset = print_char(_s[index], _c, _offset, _tty_buf);
+                index++ ;
+        };
     }
     return _offset;
 }
